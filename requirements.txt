@@ -1,4 +1,8 @@
-Flask==2.3.3
-transformers==4.39.3
-torch==2.2.2
-waitress==2.1.2
+Flask
+transformers
+torch
+waitress
+
+Optional, but recommended:
+
+gunicorn==20.1.0
