@@ -1,12 +1,4 @@
-Flask
+flask
 transformers
 torch
-waitress
-
-Optional, but recommended:
-
-gunicorn==20.1.0
-flask==2.0.1
-requests==2.25.1
-pandas==1.2.3
-python-3.10
+gunicorn
