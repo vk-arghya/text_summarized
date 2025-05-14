@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Text Summarizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #fffdfc);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 50px auto;
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .box {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      height: 250px;
+      resize: none;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .summarize-btn {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .paste-btn {
+      background-color: #ffc107;
+    }
+
+    .copy-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .loader {
+      margin-top: 10px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0d6efd;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      text-align: center;
+    }
+
+    footer a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #0d6efd;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 style="text-align: center; margin-top: 30px;">✨ Smart Text Summarizer</h1>
+
+  <div class="container">
+    <div class="box">
+      <textarea id="inputText" placeholder="Enter text here..."></textarea>
+      <div class="buttons">
+        <button class="summarize-btn" onclick="summarizeText()">Summarize</button>
+        <button class="paste-btn" onclick="pasteText()">Paste</button>
+      </div>
+    </div>
+    <div class="box">
+      <div id="loader" class="loader"></div>
+      <textarea id="outputText" placeholder="Waiting for output..." readonly></textarea>
+      <div class="buttons">
+        <button class="copy-btn" onclick="copyText()">Copy Summary</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Developed by <strong>Arghya Ghoshal</strong> |
+    <a href="mailto:arghyaghoshal44@gmail.com">✉️ Email</a>
+
+    <a href="https://github.com/vk-arghya" target="_blank">💻 GitHub</a>
+    <a href="https://www.linkedin.com/in/arghya-ghoshal-56527529a/" target="_blank">🔗 LinkedIn</a>
+  </footer>
+
+  <script>
+    async function summarizeText() {
+      const input = document.getElementById("inputText").value.trim();
+      const output = document.getElementById("outputText");
+      const loader = document.getElementById("loader");
+
+      if (!input) {
+        alert("Please enter some text to summarize.");
+        return;
+      }
+
+      loader.style.display = 'block';
+      output.value = "";
+
+      try {
+        const response = await fetch("/summarize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: input })
+        });
+
+        const data = await response.json();
+        loader.style.display = 'none';
+
+        if (data.summary) {
+          output.value = data.summary;
+        } else if (data.error) {
+          output.value = "Error: " + data.error;
+        } else {
+          output.value = "No summary returned.";
+        }
+      } catch (error) {
+        loader.style.display = 'none';
+        output.value = "Error: Unable to connect to server.";
+      }
+    }
+
+    function pasteText() {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById("inputText").value = text;
+      });
+    }
+
+    function copyText() {
+      const output = document.getElementById("outputText").value;
+      navigator.clipboard.writeText(output);
+    }
+  </script>
+
+</body>
+</html>
